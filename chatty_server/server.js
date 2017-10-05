@@ -26,11 +26,18 @@ wss.broadcast = function broadcast(data) {
 };
 
 
+function broadcastUserCount() {
+  const userCount = wss.clients.size 
+  wss.broadcast({ 
+    type: "userCount",
+    count: userCount
+  });
+}
 
 function handleMsg(data) { 
   const msgData = JSON.parse(data)
+  msgData.type= "msg";
   msgData.id = uuidv4();
-  console.log(msgData);
   wss.broadcast(msgData);
 }
 
@@ -38,12 +45,17 @@ function handleMsg(data) {
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 wss.on('connection', (client) => {
-  console.log('Client connected');
+  broadcastUserCount();
+  console.log(`${wss.clients.size} Clients are connected`);
   client.on('message', (data) => {
     handleMsg(data);
-    
   });
+  
+  
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  client.on('close', () => console.log('Client disconnected'));
-
+  client.on('close', () => {
+    broadcastUserCount();
+    console.log('Client disconnected')
+  });
+  
 });

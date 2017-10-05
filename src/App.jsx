@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ChatBar from './Chatbar.jsx';
 import MessageList from './MessageList.jsx';
+import NavBar  from './NavBar.jsx';
 
 class App extends Component {
   constructor(props) {
@@ -8,6 +9,7 @@ class App extends Component {
 
     this.state = {
       username: 'Anonymous', // optional. if currentUser is not defined, it means the user is Anonymous
+      userCount: 0,
       messages: []
     };
   }
@@ -47,11 +49,22 @@ changeUser = (user) => {
 
       this.socket.onmessage = (event) => {
         let incomingData = JSON.parse(event.data);
-        console.log(incomingData);
-        appComponent.setState({
-          messages: [...appComponent.state.messages, incomingData]
-        })
-        
+        // console.log(incomingData);
+        switch (incomingData.type) {
+          case "userCount":
+             appComponent.setState({
+              userCount: incomingData.count
+            })
+            break;
+          case "msg":
+            // console.log(incomingData);
+            appComponent.setState({
+              messages: [...appComponent.state.messages, incomingData]
+            })
+            break;
+          default:
+            break;
+        }
       }
   }
   
@@ -59,6 +72,7 @@ changeUser = (user) => {
     // console.log('Rendering <App />');
     return (
       <div>
+        <NavBar userCount= { this.state.userCount } />
         <MessageList messages= { this.state.messages }/>
         <ChatBar username={ this.state.username } 
         addMsg={ this.addMsg }
