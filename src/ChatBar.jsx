@@ -1,21 +1,27 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 
 class ChatBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: ''
+      content: '',
+      username: this.props.username
     };
   }
 
-  static propTypes = {
-    currentUser: PropTypes.object
+
+
+
+  handleUserChange = (event) => {
+    this.setState({
+      username: event.target.value
+    })
   }
 
-  onNewMsg = (event) => {
+  handleMsgChange = (event) => {
     this.setState({
       content: event.target.value
-    });
+    })
   }
 
   onKeyPress = (event) => {
@@ -24,6 +30,16 @@ class ChatBar extends Component {
       this.setState({ 
         content: ''
       })
+
+    }
+  }
+
+  onChangeUser = (event) => {
+    if (event.key === 'Enter') {
+      if(event.target.value !== this.props.username) {
+        this.props.changeUser(this.state.username)
+        this.refs.msg.focus();
+      }
     }
   }
 
@@ -31,11 +47,15 @@ class ChatBar extends Component {
 
     return (
 			<footer className="chatbar">
-				<input className="chatbar-username" placeholder={ this.props.currentUser.name } />
+				<input className="chatbar-username" ref='user'
+        value={ this.state.username } 
+        onChange= { this.handleUserChange } 
+        onKeyPress= { this.onChangeUser }
+         />
 				<input className="chatbar-message" 
-        name="newMsg" placeholder="Type a message and hit ENTER" 
-        onChange= { this.onNewMsg }  
+        ref='msg' placeholder="Type a message and hit ENTER"   
         onKeyPress={ this.onKeyPress }
+        onChange= { this.handleMsgChange }
         value= { this.state.content } />
 			</footer>
     );

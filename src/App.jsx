@@ -7,46 +7,52 @@ class App extends Component {
     super(props);
 
     this.state = {
-      nextId: 4,
-      currentUser: {name: 'Bob' }, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [
-        {
-          username: 'Bob',
-          content: 'Has anyone seen my marbles?',
-          id: 1
-        },
-        {
-          username: 'Anonymous',
-          content: 'No, I think you lost them. You lost your marbles Bob. You lost them for good.',
-          id: 2
-        }
-      ]
+      username: 'Anonymous', // optional. if currentUser is not defined, it means the user is Anonymous
+      messages: []
     };
   }
 
-addMsg = (msg) => {
-  const message = {
-    id: this.state.nextId,
-    username: this.state.currentUser.name,
-    content: msg
-  }
-  this.setState({
-    nextId: this.state.id + 1,
-    messages: this.state.messages.concat(message)
-  });
+sendData(payload) { 
+  this.socket.send(JSON.stringify(payload));
 }
 
+addMsg = (msg) => {
+  const message = {
+    type: "newMsg",
+    username: this.state.username,
+    content: msg
+  }
+  this.sendData(message);
+}
+
+changeUser = (user) => {
+  this.sendData({
+    type: "sysMsg",
+    content: `${this.state.username} changed their name to ${user}`
+  })
+  this.setState({
+    username: user
+  })
+}
+
+
   componentDidMount() {
-    console.log('componentDidMount <App />');
-    setTimeout(() => {
-      console.log('Simulating incoming message');
-      // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, username: 'Michelle', content: 'Hello there!'};
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
+    this.socket = new WebSocket (`ws://${location.hostname}:3001`)
+
+      this.socket.onopen = (event) => {
+        console.log('Connection opened');
+      }
+
+      const appComponent = this;
+
+      this.socket.onmessage = (event) => {
+        let incomingData = JSON.parse(event.data);
+        console.log(incomingData);
+        appComponent.setState({
+          messages: [...appComponent.state.messages, incomingData]
+        })
+        
+      }
   }
   
   render() {
@@ -54,7 +60,9 @@ addMsg = (msg) => {
     return (
       <div>
         <MessageList messages= { this.state.messages }/>
-        <ChatBar currentUser={ this.state.currentUser } addMsg={ this.addMsg }/>
+        <ChatBar username={ this.state.username } 
+        addMsg={ this.addMsg }
+        changeUser= { this.changeUser } />
       </div>
     );
   }

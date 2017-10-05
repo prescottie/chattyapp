@@ -10,7 +10,7 @@ body {
 }
 
 .chatbar {
-  background: tomato;
+  background: rosybrown;
   border-top: 1px solid black;
   bottom: 0;
   display: flex;
@@ -47,6 +47,7 @@ body {
 .message.system {
   font-style: italic;
   padding: 5px 20px;
+  color: salmon;
 }
 
 .message-content,
@@ -65,8 +66,10 @@ body {
   font-weight: 700;
 }
 
+
+
 .navbar {
-  background: tomato;
+  background: rosybrown;
   border-bottom: 1px solid black;
   height: 60px;
   left: 0;
@@ -74,6 +77,7 @@ body {
   position: fixed;
   right: 0;
   top: 0;
+  color: white;
 }
 
 .navbar-brand {
