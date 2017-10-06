@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 
 class Message extends Component {
   handleMessage() {
+    /* If the message passed in from message list is a post notification, log a system message
+       or if the message is a user posted message, create a normal text message */
     switch (this.props.type) {
       case "postNotification":
         return (<small className="message system">{ this.props.content }</small>);
@@ -14,8 +16,6 @@ class Message extends Component {
   }
 
   render() {
-  
-
     return (
       <div>
         <div className="message">

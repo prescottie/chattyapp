@@ -9,9 +9,6 @@ class ChatBar extends Component {
     };
   }
 
-
-
-
   handleUserChange = (event) => {
     this.setState({
       username: event.target.value
@@ -23,7 +20,9 @@ class ChatBar extends Component {
       content: event.target.value
     })
   }
-
+  
+  /* If a user press' enter on a the message bar, run the addMsg function from the app component
+     and empty out the message bar. */
   onKeyPress = (event) => {
     if (event.key === 'Enter') {
       this.props.addMsg(this.state.content)
@@ -34,6 +33,8 @@ class ChatBar extends Component {
     }
   }
 
+  /*If a user press' Enter on the username field, check if the user name has changed,
+    if so, then run the change user function from the app component and focus the message bar*/
   onChangeUser = (event) => {
     if (event.key === 'Enter') {
       if(event.target.value !== this.props.username) {
@@ -44,7 +45,6 @@ class ChatBar extends Component {
   }
 
   render() {
-
     return (
 			<footer className="chatbar">
 				<input className="chatbar-username" ref='user'

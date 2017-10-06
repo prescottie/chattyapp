@@ -25,7 +25,7 @@ wss.broadcast = function broadcast(data) {
   });
 };
 
-
+// use to count all users connected to the websockets server  and broadcast out to all connected users 
 function broadcastUserCount() {
   const userCount = wss.clients.size 
   wss.broadcast({ 
@@ -33,7 +33,7 @@ function broadcastUserCount() {
     count: userCount
   });
 }
-
+// receive a message from a client, give it a unique id and broadcast it to all users 
 function handleMsg(data) { 
   let msgData;
   try {

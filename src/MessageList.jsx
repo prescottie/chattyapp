@@ -3,6 +3,7 @@ import Message from './message.jsx';
 
 class MessageList extends Component {
   render() {
+		// Loop through messages array from app component and send each message to message component to display. 
 		const messages = this.props.messages.map(message => {
 			return <Message 
 				key= { message.id }
@@ -13,7 +14,6 @@ class MessageList extends Component {
 
 		return (
 			<main className="messages">
-				
 				{messages}
 			</main>
     );

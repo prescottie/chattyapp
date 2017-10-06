@@ -8,7 +8,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      username: 'Anonymous', // optional. if currentUser is not defined, it means the user is Anonymous
+      username: 'Anonymous', 
       userCount: 0,
       messages: []
     };
@@ -17,7 +17,7 @@ class App extends Component {
 sendData(payload) { 
   this.socket.send(JSON.stringify(payload));
 }
-
+// Given a message from the message bar, send the content and message type to the server to broadcast to all users connected.
 addMsg = (msg) => {
   const message = {
     type: "postMsg",
@@ -27,6 +27,7 @@ addMsg = (msg) => {
   this.sendData(message);
 }
 
+// Given a user from the username bar, send the content and message type to the server to broadcast to all users connected.
 changeUser = (user) => {
   this.sendData({
     type: "postNotification",
@@ -36,42 +37,43 @@ changeUser = (user) => {
     username: user
   })
 }
+ 
+componentDidMount() {
+  this.socket = new WebSocket (`ws://${location.hostname}:3001`)
 
+    this.socket.onopen = (event) => {
+      console.log('Connection opened');
+    }
 
-  componentDidMount() {
-    this.socket = new WebSocket (`ws://${location.hostname}:3001`)
+    const appComponent = this;
 
-      this.socket.onopen = (event) => {
-        console.log('Connection opened');
+    this.socket.onmessage = (event) => {
+      let incomingData;
+      try {
+      incomingData = JSON.parse(event.data);
       }
-
-      const appComponent = this;
-
-      this.socket.onmessage = (event) => {
-        let incomingData;
-        try {
-        incomingData = JSON.parse(event.data);
-        }
-        catch(error) {
-          console.log(error);
-        }
-        switch (incomingData.type) {
-          case "userCount":
-             appComponent.setState({
-              userCount: incomingData.count
-            })
-            break;
-          case "postNotification":
-          case "postMsg":
+      catch(error) {
+        console.log(error);
+      }
+      /* On message type userCount, update the usercount, on message type postNotification or postMsg,
+          add the message to the messages array which is send down to the messages list */
+      switch (incomingData.type) {
+        case "userCount":
             appComponent.setState({
-              messages: [...appComponent.state.messages, incomingData]
-            })
-            break;
-          default:
-            break;
-        }
+            userCount: incomingData.count
+          })
+          break;
+        case "postNotification":
+        case "postMsg":
+          appComponent.setState({
+            messages: [...appComponent.state.messages, incomingData]
+          })
+          break;
+        default:
+          break;
       }
-  }
+    }
+}
   
   render() {
     return (
