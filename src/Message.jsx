@@ -3,10 +3,10 @@ import React, {Component} from 'react';
 class Message extends Component {
   handleMessage() {
     switch (this.props.type) {
-      case "sysMsg":
+      case "postNotification":
         return (<small className="message system">{ this.props.content }</small>);
         break;
-      case "newMsg":
+      case "postMsg":
         default:
         return (<span className="message-content">{ this.props.content }</span>);
         break;

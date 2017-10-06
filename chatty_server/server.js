@@ -35,8 +35,14 @@ function broadcastUserCount() {
 }
 
 function handleMsg(data) { 
-  const msgData = JSON.parse(data)
-  msgData.type= "msg";
+  let msgData;
+  try {
+    msgData = JSON.parse(data);
+  }
+  catch(error) {
+    console.log(error);
+    return;
+  }
   msgData.id = uuidv4();
   wss.broadcast(msgData);
 }

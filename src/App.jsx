@@ -20,7 +20,7 @@ sendData(payload) {
 
 addMsg = (msg) => {
   const message = {
-    type: "newMsg",
+    type: "postMsg",
     username: this.state.username,
     content: msg
   }
@@ -29,7 +29,7 @@ addMsg = (msg) => {
 
 changeUser = (user) => {
   this.sendData({
-    type: "sysMsg",
+    type: "postNotification",
     content: `${this.state.username} changed their name to ${user}`
   })
   this.setState({
@@ -48,16 +48,21 @@ changeUser = (user) => {
       const appComponent = this;
 
       this.socket.onmessage = (event) => {
-        let incomingData = JSON.parse(event.data);
-        // console.log(incomingData);
+        let incomingData;
+        try {
+        incomingData = JSON.parse(event.data);
+        }
+        catch(error) {
+          console.log(error);
+        }
         switch (incomingData.type) {
           case "userCount":
              appComponent.setState({
               userCount: incomingData.count
             })
             break;
-          case "msg":
-            // console.log(incomingData);
+          case "postNotification":
+          case "postMsg":
             appComponent.setState({
               messages: [...appComponent.state.messages, incomingData]
             })
@@ -69,7 +74,6 @@ changeUser = (user) => {
   }
   
   render() {
-    // console.log('Rendering <App />');
     return (
       <div>
         <NavBar userCount= { this.state.userCount } />
